@@ -17,6 +17,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.btnCancelOnPress, btnCancel)
         self.Bind(wx.EVT_BUTTON, self.btnOkOnPress, btnOk)
         self.listCtrl.Bind(wx.EVT_KEY_DOWN, self.listCtrlOnKeyDown)
+        self.panel.Bind(wx.EVT_CHAR_HOOK, self.panelOnKeyHook)
 
         box = wx.BoxSizer(wx.VERTICAL)
         box.Add(self.listCtrl, 1, wx.EXPAND | wx.ALL,0)
@@ -40,11 +41,10 @@ class MyFrame(wx.Frame):
 
         for i in range(len(itens)):
             self.listCtrl.InsertItem(itens[i].GetItem())
-            print(itens[i].GetItem().GetText())
         self.listCtrl.Select(0)
 
         self.panel.SetSizer(box)
-        #box.SetSizeHints(self)
+        box.SetSizeHints(self)
         self.Show(True)
 
     def btnCancelOnPress(self, event):
@@ -54,11 +54,16 @@ class MyFrame(wx.Frame):
         self.lauchGame()
 
     def listCtrlOnKeyDown(self, event):
-        event.DoAllowNextEvent()
         if (event.GetKeyCode() == 13):
             self.lauchGame()
         else:
             event.Skip()
+
+    def panelOnKeyHook(self, event):
+        event.DoAllowNextEvent()
+        if (event.GetKeyCode() == 27):
+            self.Close()
+        event.Skip()
 
     def lauchGame(self):
         item = self.itens[self.listCtrl.GetFocusedItem()]
