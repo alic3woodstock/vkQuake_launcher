@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import wx
 import os
+import csv
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
@@ -30,17 +31,15 @@ class MyFrame(wx.Frame):
         box.Add(box2, 0, wx.ALIGN_RIGHT | wx.ALL)
         box.AddSpacer(8)
 
-        self.listCtrl.AppendColumn('Levels', width=self.listCtrl.GetSize().GetWidth())
-        itens = self.itens
-        itens.append(GameDef(id = 0, str = "Quake - First Episodes", dir = "id1"))
-        itens.append(GameDef(id = 1, str = "Scourge of Armagon", dir = "hipnotic"))
-        itens.append(GameDef(id = 2, str = "Dissolution of Eternity", dir = "rogue"))
-        itens.append(GameDef(id = 3, str = "Dimension of the Pastn", dir = "dopa"))
-        itens.append(GameDef(id = 4, str = "Dimension of the Machine", dir = "mg1"))
-        itens.append(GameDef(id = 5, str = "Arcane Dimensions", dir = "ad"))
+        if (not(os.path.exists('games.csv'))):
+            self.writeDefaultCSV()
 
-        for i in range(len(itens)):
-            self.listCtrl.InsertItem(itens[i].GetItem())
+
+        self.listCtrl.AppendColumn('Levels', width=self.listCtrl.GetSize().GetWidth())
+        self.readCSV(self.itens)
+
+        for i in range(len(self.itens)):
+            self.listCtrl.InsertItem(self.itens[i].GetItem())
         self.listCtrl.Select(0)
 
         self.panel.SetSizer(box)
@@ -66,11 +65,29 @@ class MyFrame(wx.Frame):
         event.Skip()
 
     def lauchGame(self):
-        item = self.itens[self.listCtrl.GetFocusedItem()]
-        os.popen("./vkquake -game " + item.GetGameDir())
+        item = self.itens[self.listCtrl.GetFirstSelected()]
+        os.popen(item.GetExec() + " -game " + item.GetGameDir())
         self.listCtrl.SetFocus()
 
+    def writeDefaultCSV(self):
+        with open ('games.csv', 'w', newline = '') as csvfile:
+            writer = csv.writer(csvfile, dialect = 'unix')
+            writer.writerow(['id', 'Title', 'Directory', 'Executable'])
+            writer.writerow([0, 'Quake - First Episodes','id1', './vkquake'])
+            writer.writerow([1, 'Scourge of Armagon', 'hipnotic', './vkquake'])
+            writer.writerow([2, 'Dissolution of Eternity', 'rogue', './vkquake'])
+            writer.writerow([3, 'Dimension of the Pastn', 'dopa', './vkquake'])
+            writer.writerow([4, 'Dimension of the Machine', 'mg1', './vkquake'])
+            writer.writerow([5, 'Arcane Dimensions', 'ad', './vkquake'])
 
+    def readCSV(self, itens):
+        with open ('games.csv', newline = '') as csvfile:
+            reader = csv.reader(csvfile, dialect='unix')
+            i = 0
+            for row in reader:
+                if (i > 0):
+                    itens.append(GameDef(int(row[0]), row[1], row[2], row[3]))
+                i += 1
 
 
 class GameDef():
@@ -86,17 +103,24 @@ class GameDef():
     def SetGameDir(self, gameDir):
         self._gameDir = gameDir
 
+    def GetExec(self):
+        return self._exec
+
+    def SetExec(self, exec):
+        self._exec = exec
+
     def __init__(self, item, gameDir):
         self._item = item
         self._gameDir = gameDir
         _item.SetId(0)
         _item.SetText("")
 
-    def __init__ (self, id, str, dir):
+    def __init__ (self, id, str, dir, exec = './vkquake'):
         self._item = wx.ListItem()
         self._item.SetId(id)
         self._item.SetText(str)
         self._gameDir = dir
+        self._exec = exec
 
 
 app = wx.App(False)
