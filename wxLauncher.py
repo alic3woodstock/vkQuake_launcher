@@ -72,6 +72,7 @@ class MyFrame(wx.Frame):
     def writeDefaultCSV(self):
         with open ('games.csv', 'w', newline = '') as csvfile:
             writer = csv.writer(csvfile, dialect = 'unix')
+            #need tweaking to run the game on windows
             writer.writerow(['id', 'Title', 'Directory', 'Executable'])
             writer.writerow([0, 'Quake - First Episodes','id1', './vkquake'])
             writer.writerow([1, 'Scourge of Armagon', 'hipnotic', './vkquake'])
