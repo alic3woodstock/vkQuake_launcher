@@ -72,14 +72,17 @@ class MyFrame(wx.Frame):
     def writeDefaultCSV(self):
         with open ('games.csv', 'w', newline = '') as csvfile:
             writer = csv.writer(csvfile, dialect = 'unix')
-            #need tweaking to run the game on windows
+            if (os.name == "nt"):
+                exec = ".\\vkquake.exe"
+            else:
+                exec = "./vkquake"
             writer.writerow(['id', 'Title', 'Directory', 'Executable'])
-            writer.writerow([0, 'Quake - First Episodes','id1', './vkquake'])
-            writer.writerow([1, 'Scourge of Armagon', 'hipnotic', './vkquake'])
-            writer.writerow([2, 'Dissolution of Eternity', 'rogue', './vkquake'])
-            writer.writerow([3, 'Dimension of the Pastn', 'dopa', './vkquake'])
-            writer.writerow([4, 'Dimension of the Machine', 'mg1', './vkquake'])
-            writer.writerow([5, 'Arcane Dimensions', 'ad', './vkquake'])
+            writer.writerow([0, 'Quake - First Episodes','id1', exec])
+            writer.writerow([1, 'Scourge of Armagon', 'hipnotic', exec])
+            writer.writerow([2, 'Dissolution of Eternity', 'rogue', exec])
+            writer.writerow([3, 'Dimension of the Pastn', 'dopa', exec])
+            writer.writerow([4, 'Dimension of the Machine', 'mg1', exec])
+            writer.writerow([5, 'Arcane Dimensions', 'ad', exec])
 
     def readCSV(self, itens):
         with open ('games.csv', newline = '') as csvfile:
