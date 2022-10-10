@@ -2,6 +2,7 @@
 import wx
 import os
 import csv
+import gameDef
 
 class MyFrame(wx.Frame):
     def __init__(self, parent, title):
@@ -9,6 +10,7 @@ class MyFrame(wx.Frame):
         self.itemId = 0
 
         frame = wx.Frame.__init__(self, parent, title=title, size=(480,480))
+        #self.Centre(wx.VERTICAL)
         self.panel = wx.Panel(self, wx.ID_ANY)
         btnOk = wx.Button(self.panel, wx.ID_ANY, 'OK')
         btnCancel = wx.Button(self.panel, wx.ID_ANY, 'Cancelar')
@@ -21,13 +23,13 @@ class MyFrame(wx.Frame):
         self.panel.Bind(wx.EVT_CHAR_HOOK, self.panelOnKeyHook)
 
         box = wx.BoxSizer(wx.VERTICAL)
-        box.Add(self.listCtrl, 1, wx.EXPAND | wx.ALL,0)
-        box.AddSpacer(10)
+        box.Add(self.listCtrl, 1, wx.EXPAND | wx.ALL, border=4)
+        box.AddSpacer(6)
 
         box2 = wx.BoxSizer(wx.HORIZONTAL)
         box2.Add(btnOk,0, wx.RIGHT)
         box2.AddSpacer(4)
-        box2.Add(btnCancel,0, wx.RIGHT)
+        box2.Add(btnCancel,0, wx.RIGHT, border=4)
         box.Add(box2, 0, wx.ALIGN_RIGHT | wx.ALL)
         box.AddSpacer(8)
 
@@ -35,15 +37,20 @@ class MyFrame(wx.Frame):
             self.writeDefaultCSV()
 
 
-        self.listCtrl.AppendColumn('Levels', width=self.listCtrl.GetSize().GetWidth())
+        self.listCtrl.AppendColumn('Levels', width=self.listCtrl.GetSize().GetWidth() - 4)
         self.readCSV(self.itens)
 
         for i in range(len(self.itens)):
             self.listCtrl.InsertItem(self.itens[i].GetItem())
+
+        item = self.itens[self.listCtrl.GetFirstSelected()]
         self.listCtrl.Select(0)
+        self.listCtrl.SetFocus()
+        self.listCtrl.Focus(0)
 
         self.panel.SetSizer(box)
         box.SetSizeHints(self)
+        self.Centre()
         self.Show(True)
 
     def btnCancelOnPress(self, event):
@@ -90,42 +97,8 @@ class MyFrame(wx.Frame):
             i = 0
             for row in reader:
                 if (i > 0):
-                    itens.append(GameDef(int(row[0]), row[1], row[2], row[3]))
+                    itens.append(gameDef.GameDef(int(row[0]), row[1], row[2], row[3]))
                 i += 1
-
-
-class GameDef():
-    def GetItem(self):
-        return self._item
-
-    def SetItem(self, item):
-        self._item = item
-
-    def GetGameDir(self):
-        return self._gameDir
-
-    def SetGameDir(self, gameDir):
-        self._gameDir = gameDir
-
-    def GetExec(self):
-        return self._exec
-
-    def SetExec(self, exec):
-        self._exec = exec
-
-    def __init__(self, item, gameDir):
-        self._item = item
-        self._gameDir = gameDir
-        _item.SetId(0)
-        _item.SetText("")
-
-    def __init__ (self, id, str, dir, exec = './vkquake'):
-        self._item = wx.ListItem()
-        self._item.SetId(id)
-        self._item.SetText(str)
-        self._gameDir = dir
-        self._exec = exec
-
 
 app = wx.App(False)
 frame = MyFrame(None, 'Quake Launcher')
