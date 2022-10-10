@@ -48,6 +48,16 @@ class MyFrame(wx.Frame):
         self.listCtrl.SetFocus()
         self.listCtrl.Focus(0)
 
+        if (os.name == "nt"):
+            self.panel.SetForegroundColour("White")
+            self.panel.SetBackgroundColour(wx.Colour(25,25,25))
+            btnOk.SetForegroundColour("White")
+            btnOk.SetBackgroundColour(wx.Colour(20,20,20))
+            btnCancel.SetForegroundColour("White")
+            btnCancel.SetBackgroundColour(wx.Colour(20,20,20))
+            self.listCtrl.SetForegroundColour("White")
+            self.listCtrl.SetBackgroundColour(wx.Colour(20,20,20))
+
         self.panel.SetSizer(box)
         box.SetSizeHints(self)
         self.Centre()
